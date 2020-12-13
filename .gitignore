@@ -1,0 +1,45 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+/logs/
+.DS_Store
+docs/
+oms-trantor/logs/
+*.log
+logs
+
+node_modules/
+db/*.bak
+/oms-web/src/main/java/io/terminus/owt/oms/web/controller/OmsPdaApplication.java
+/oms-web/src/main/resources/application.yml
+dice.yml
+dice_prod.yml
+pipeline.yml
+
+*.idea

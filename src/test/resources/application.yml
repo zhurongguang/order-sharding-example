@@ -1,0 +1,87 @@
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.flash.framework.order.sharding.model
+  global-config:
+    banner: false
+    db-config:
+      insert-strategy: ignored
+      update-strategy: not_empty
+      select-strategy: ignored
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+
+spring:
+  application:
+    name: order-sharding-example
+  shardingsphere:
+    datasource:
+      # 分库配置，我这里还是使用一个库
+      names: trade
+      # 每个库的配置
+      trade:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:trade}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+        username: ${MYSQL_USERNAME:root}
+        password: ${MYSQL_PASSWORD:password}
+        type: com.zaxxer.hikari.HikariDataSource
+        minimum-idle: 5
+        maximum-pool-size: 15
+        auto-commit: true
+        idle-timeout: 30000
+        max-lifetime: 1800000
+        connection-timeout: 30000
+    # 分表配置
+    sharding:
+      tables:
+        # 订单表分表
+        order:
+          logic-table: order
+          # order表分为10个
+          actual-data-nodes: trade.order_$->{0..9}
+          table-strategy:
+            inline:
+              sharding-column: id
+              # order表按照id % 10 均匀分配
+              algorithm-expression: order_$->{id.longValue() % 10}
+  elasticsearch:
+    bboss:
+      elasticUser: ${ELASTICSEARCH_USERNAME:}
+      elasticPassword: ${ELASTICSEARCH_PASSWORD:}
+      elasticsearch:
+        rest:
+          hostNames: ${ELASTICSEARCH_HOST:127.0.0.1}:${ELASTICSEARCH_PORT:9200}
+        dateFormat: yyyy-MM-dd HH:mm:ss
+        timeZone: Asia/Shanghai
+        showTemplate: false
+        discoverHost: false
+      dslfile:
+        refreshInterval: -1
+      http:
+        timeoutConnection: 5000
+        timeoutSocket: 5000
+        connectionRequestTimeout: 5000
+        retryTime: 1
+        maxLineLength: -1
+        maxHeaderCount: 200
+        maxTotal: 400
+        defaultMaxPerRoute: 200
+        soReuseAddress: false
+        soKeepAlive: false
+        timeToLive: 3600000
+        keepAlive: 3600000
+      mapperFilePath: esmapper
+
+mybatis:
+  generator:
+    author: zhurg
+    enable: false
+    base-package: com.flash.framework.order.sharding
+    driver-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:password}
+    jdbc-url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:trade}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+    auto-init: false
+    project: order-sharding-example

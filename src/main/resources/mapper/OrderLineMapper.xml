@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flash.framework.order.sharding.mapper.OrderLineMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.flash.framework.order.sharding.model.entity.OrderLine">
+        <id column="id" property="id" />
+        <result column="deleted" property="deleted" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="order_id" property="orderId" />
+        <result column="pay_status" property="payStatus" />
+        <result column="delivery_status" property="deliveryStatus" />
+        <result column="receive_status" property="receiveStatus" />
+        <result column="reverse_status" property="reverseStatus" />
+        <result column="refund_at" property="refundAt" />
+        <result column="confirm_at" property="confirmAt" />
+        <result column="sku_id" property="skuId" />
+        <result column="sku_code" property="skuCode" />
+        <result column="sku_name" property="skuName" />
+        <result column="quantity" property="quantity" />
+        <result column="paid_amount" property="paidAmount" />
+        <result column="sku_origin_total_amount" property="skuOriginTotalAmount" />
+        <result column="sku_discount_total_amount" property="skuDiscountTotalAmount" />
+        <result column="ship_fee_origin_amount" property="shipFeeOriginAmount" />
+        <result column="ship_fee_discount_total_amount" property="shipFeeDiscountTotalAmount" />
+        <result column="created_by" property="createdBy" />
+        <result column="updated_by" property="updatedBy" />
+        <result column="item_id" property="itemId" />
+        <result column="item_name" property="itemName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        deleted,
+        created_at,
+        updated_at,
+        id, tenant_id, order_id, pay_status, delivery_status, receive_status, reverse_status, refund_at, confirm_at, sku_id, sku_code, sku_name, quantity, paid_amount, sku_origin_total_amount, sku_discount_total_amount, ship_fee_origin_amount, ship_fee_discount_total_amount, created_by, updated_by, item_id, item_name
+    </sql>
+
+</mapper>

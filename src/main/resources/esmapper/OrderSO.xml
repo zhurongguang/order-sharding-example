@@ -1,0 +1,236 @@
+<properties>
+
+    <!-- 创建索引 -->
+    <property name="indiceMapping">
+        <![CDATA[{
+            "settings": {
+                "number_of_shards": 5,
+                "number_of_replicas": 1,
+                "index.refresh_interval": "1s"
+            },
+            "mappings": {
+                "order": {
+                    "properties":{
+                        "tenantId":{
+                            "type":"integer"
+                        },
+                        "orderId":{
+                            "type":"long"
+                        },
+                        "buyerId":{
+                            "type":"long"
+                        },
+                        "shopId":{
+                            "type":"long"
+                        },
+                        "shopName":{
+                            "type":"text"
+                        },
+                        "items":{
+                            "type":"text"
+                        },
+                        "createdAt":{
+                            "type":"date",
+                            "format":"yyyy-MM-dd HH:mm:ss"
+                        },
+                        "updatedAt":{
+                            "type":"date",
+                            "format":"yyyy-MM-dd HH:mm:ss"
+                        },
+                        "payAt":{
+                            "type":"date",
+                            "format":"yyyy-MM-dd HH:mm:ss"
+                        },
+                        "shippingAt":{
+                            "type":"date",
+                            "format":"yyyy-MM-dd HH:mm:ss"
+                        },
+                        "confirmAt":{
+                            "type":"date",
+                            "format":"yyyy-MM-dd HH:mm:ss"
+                        },
+                        "accomplishAt":{
+                            "type":"date",
+                            "format":"yyyy-MM-dd HH:mm:ss"
+                        },
+                        "payStatus":{
+                            "type":"keyword"
+                        },
+                        "deliveryStatus":{
+                            "type":"keyword"
+                        },
+                        "receiveStatus":{
+                            "type":"keyword"
+                        },
+                        "reverseStatus":{
+                            "type":"keyword"
+                        }
+                    }
+                }
+            }
+        }]]>
+    </property>
+
+    <property name="page">
+        <![CDATA[{
+            #set( $hasParam = false ) ## 定义一个是否已经有参数条件的bool变量，控制后续的条件是否前面加逗号
+            "query": {
+                "bool": {
+                    "filter": [
+                        #if($payStatus && $payStatus.size() > 0)
+                        #set( $hasParam = true )
+                        {
+                            "terms": {
+                                "payStatus" : {
+                                    #foreach($ps in $payStatus)
+                                       #if($velocityCount > 0),#end
+                                       #[$payStatus[$velocityCount]]
+                                    #end
+                                }
+                            }
+                        }
+                        #end
+
+                        #if($deliveryStatus && $deliveryStatus.size() > 0)
+                        #if($hasParam) , #else #set( $hasParam = true ) #end
+                        {
+                            "terms": {
+                                "deliveryStatus" : {
+                                    #foreach($ds in $deliveryStatus)
+                                       #if($velocityCount > 0),#end
+                                       #[$deliveryStatus[$velocityCount]]
+                                    #end
+                                }
+                            }
+                        }
+                        #end
+
+                        #if($receiveStatus && $receiveStatus.size() > 0)
+                        #if($hasParam) , #else #set( $hasParam = true ) #end
+                        {
+                            "terms": {
+                                "receiveStatus" : {
+                                    #foreach($rs in $receiveStatus)
+                                       #if($velocityCount > 0),#end
+                                       #[$receiveStatus[$velocityCount]]
+                                    #end
+                                }
+                            }
+                        }
+                        #end
+
+                        #if($reverseStatus && $reverseStatus.size() > 0)
+                        #if($hasParam) , #else #set( $hasParam = true ) #end
+                        {
+                            "terms": {
+                                "reverseStatus" : {
+                                    #foreach($rs in $reverseStatus)
+                                       #if($velocityCount > 0),#end
+                                       #[$reverseStatus[$velocityCount]]
+                                    #end
+                                }
+                            }
+                        }
+                        #end
+
+                        #if($tenantId)
+                        #if($hasParam) , #else #set( $hasParam = true ) #end
+                        {
+                            "term": {
+                                "tenantId" : #{tenantId}
+                            }
+                        }
+                        #end
+
+                        #if($startAt && $endAt)
+                        #if($hasParam) , #end
+                        {
+                            "range": {
+                                "createdAt": {
+                                    "gte": #[startAt],
+                                    "lte": #[endAt]
+                                }
+                            }
+                        }
+                        #end
+                    ]
+                    #if($itemName || $itemName)
+                    #if($hasParam), #end
+                    #set( $hasMustParam = false ) ## 定义一个是否已经有参数条件的bool变量，控制后续的条件是否前面加逗号
+                    "must": [
+                        #if($buyerId)
+                        #set( $hasMustParam = true )
+                        {
+                            "term": {
+                                "buyerId": #{buyerId}
+                            }
+                        }
+                        #end
+
+                        #if($orderIds && $orderIds.size() > 0)
+                        #if($hasMustParam),#else #set( $hasMustParam = true ) #end
+                        {
+                            "terms": {
+                                "orderId": [
+                                    #foreach($orderId in $orderIds)
+                                       #if($velocityCount > 0),#end
+                                       #[$orderIds[$velocityCount]]
+                                    #end
+                                ]
+                            }
+                        }
+                        #end
+
+                        #if($shopIds && $shopIds.size() > 0)
+                        #if($hasMustParam),#else #set( $hasMustParam = true ) #end
+                        {
+                            "terms": {
+                                "shopId": [
+                                    #foreach($shopId in $shopIds)
+                                       #if($velocityCount > 0),#end
+                                       #[$shopIds[$velocityCount]]
+                                    #end
+                                ]
+                            }
+                        }
+                        #end
+
+                        #if($!shopName)
+                        #if($hasMustParam),#else #set( $hasMustParam = true ) #end
+                        {
+                            "match": {
+                                "shopName": #[shopName]
+                            }
+                        }
+                        #end
+
+                        #if($itemName)
+                        #if($hasMustParam),#end
+                        {
+                            "nested": {
+                                "path": "items",
+                                "query": {
+                                    "match": {
+                                      "items.name": #{itemName}
+                                    }
+                                }
+                              }
+                            }
+                        }
+                        #end
+                    ]
+                    #end
+                }
+            },
+            "from":#[from],
+            "size":#[size],
+            "sort": [
+                {
+                  "createdAt": {
+                    "order": "desc"
+                  }
+                }
+            ]
+        }]]>
+    </property>
+</properties>
